@@ -15,7 +15,7 @@ paths:
   /health:
     get:
       summary: Health check
-      description: Check if the service is running.
+      description: Checks if the service is running.
       responses:
         '200':
           description: Service is healthy
@@ -34,3 +34,39 @@ paths:
                     type: string
                     format: date-time
                     example: "2023-10-01T12:00:00Z"
+  /instances:
+    get:
+      summary: List JVM instances
+      description: Returns a list of JVM instances that are currently running on the host system.
+      responses:
+        '200':
+          description: List of JVM instances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Instance'
+
+components:
+  schemas:
+    Instance:
+      type: object
+      required:
+        - id
+        - display_name
+        - properties
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the JVM instance, usually the PID.
+          example: "12345"
+        display_name:
+          type: string
+          description: Human-readable name of the JVM instance, usually the command-line.
+          example: "java -jar TestApp-1.0.jar"
+        properties:
+          type: object
+          description: System properties of the JVM instance.
+          additionalProperties:
+            type: string

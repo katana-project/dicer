@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"reflect"
 	"runtime/debug"
 	"strconv"
 	"syscall"
@@ -16,6 +17,7 @@ import (
 	"github.com/charmbracelet/fang"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/log"
+	"github.com/run-slicer/attach"
 	"github.com/run-slicer/cutter/api"
 	"github.com/spf13/cobra"
 )
@@ -144,6 +146,13 @@ func main() {
 		},
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			displayBanner(time.Since(t))
+
+			provider, err := attach.Default()
+			if err != nil {
+				return fmt.Errorf("failed to get default provider, are you on a supported system? (%w)", err)
+			}
+			log.Debug("using attach provider", "name", reflect.TypeOf(provider).Elem().Name())
+
 			if port == 0 {
 				var err error
 				port, err = findPort()
@@ -154,7 +163,8 @@ func main() {
 				log.Debug("found free port", "port", port)
 			}
 
-			h := api.HandlerWithOptions(api.NewStrictHandler(api.NewServer(), nil), api.StdHTTPServerOptions{
+			server := api.NewServer(provider)
+			h := api.HandlerWithOptions(api.NewStrictHandler(server, nil), api.StdHTTPServerOptions{
 				BaseURL: "/api",
 				Middlewares: []api.MiddlewareFunc{
 					api.Logging,
