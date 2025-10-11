@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/fs"
 	"net"
 	"net/http"
 	"os"
@@ -17,7 +18,9 @@ import (
 	"github.com/charmbracelet/fang"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/log"
+	"github.com/rs/cors"
 	"github.com/run-slicer/attach"
+	"github.com/run-slicer/cutter"
 	"github.com/run-slicer/cutter/api"
 	"github.com/spf13/cobra"
 )
@@ -164,12 +167,22 @@ func main() {
 			}
 
 			server := api.NewServer(provider)
-			h := api.HandlerWithOptions(api.NewStrictHandler(server, nil), api.StdHTTPServerOptions{
+			apiHandler := api.HandlerWithOptions(api.NewStrictHandler(server, nil), api.StdHTTPServerOptions{
 				BaseURL: "/api",
 				Middlewares: []api.MiddlewareFunc{
 					api.Logging,
 				},
 			})
+
+			assetFs, err := fs.Sub(cutter.WebAssets, "web/dist")
+			if err != nil {
+				return fmt.Errorf("failed to make sub-fs for web assets: %w", err)
+			}
+
+			h := http.NewServeMux()
+			h.Handle("/", http.FileServerFS(assetFs))
+			h.Handle("/api/", cors.Default().Handler(apiHandler))
+
 			s := &http.Server{
 				Handler: h,
 				Addr:    fmt.Sprintf("localhost:%d", port),
@@ -190,6 +203,7 @@ func main() {
 			}()
 
 			log.Info("listening for requests", "port", port)
+			log.Info("access the web interface at", "url", fmt.Sprintf("http://localhost:%d", port))
 			if err := s.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 				return fmt.Errorf("HTTP server failed: %w", err)
 			}

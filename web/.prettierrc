@@ -1,0 +1,21 @@
+{
+  "arrowParens": "always",
+  "singleQuote": false,
+  "semi": true,
+  "trailingComma": "es5",
+  "organizeImportsSkipDestructiveCodeActions": true,
+  "plugins": [
+    "prettier-plugin-organize-imports",
+    "prettier-plugin-svelte",
+    "prettier-plugin-tailwindcss"
+  ],
+  "overrides": [
+    {
+      "files": "*.svelte",
+      "options": {
+        "parser": "svelte"
+      }
+    }
+  ],
+  "tailwindStylesheet": "./src/app.css"
+}

@@ -22,6 +22,15 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.24.x"
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+      - name: Build web interface
+        run: |
+          cd web
+          corepack pnpm install
+          corepack pnpm build
       - name: Build binary
         env:
           GOOS: ${{ matrix.goos }}
