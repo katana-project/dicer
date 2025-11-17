@@ -8,13 +8,13 @@ jobs:
   build:
     strategy:
       matrix:
-        goos: [linux, darwin]
+        goos: [linux, windows, darwin]
         goarch: [386, amd64, arm64]
         exclude:
           - goos: darwin
             goarch: 386
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,7 +31,23 @@ jobs:
           cd web
           corepack pnpm install
           corepack pnpm build
-      - name: Build binary
+      - name: Set up llvm-mingw for Windows
+        if: matrix.goos == 'windows'
+        run: |
+          LLVM_MINGW_VERSION=20251104
+          curl -LO --progress-bar https://github.com/mstorsjo/llvm-mingw/releases/download/${LLVM_MINGW_VERSION}/llvm-mingw-${LLVM_MINGW_VERSION}-ucrt-ubuntu-22.04-x86_64.tar.xz
+          tar -xzvf llvm-mingw-${LLVM_MINGW_VERSION}-ucrt-ubuntu-22.04-x86_64.tar.xz
+          echo "$(pwd)/llvm-mingw-${LLVM_MINGW_VERSION}-ucrt-ubuntu-22.04-x86_64/bin" >> $GITHUB_PATH
+      - name: Build binary (Windows)
+        if: matrix.goos == 'windows'
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 1
+          CC: ${{ matrix.goarch == 'amd64' && 'x86_64-w64-mingw32-gcc' || matrix.goarch == 'arm64' && 'aarch64-w64-mingw32-gcc' || 'i686-w64-mingw32-gcc' }}
+        run: go build -v -ldflags="-s -w" -o build/cutter_${GOOS}_${GOARCH} ./cmd/cutter
+      - name: Build binary (other platforms without cgo)
+        if: matrix.goos != 'windows'
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
@@ -40,5 +56,5 @@ jobs:
       - name: Publish artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cutter_${{ matrix.goos }}_${{ matrix.goarch }}
+          name: cutter_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}
           path: build/cutter_${{ matrix.goos }}_${{ matrix.goarch }}
