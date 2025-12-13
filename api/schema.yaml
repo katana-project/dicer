@@ -1,7 +1,7 @@
 openapi: 3.0.0
 
 info:
-  title: cutter
+  title: dicer
   version: 1.0.0
   description: REST API for remote JVM instrumentation.
   contact:

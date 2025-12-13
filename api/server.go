@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/log"
-	"github.com/run-slicer/attach"
+	"github.com/katana-project/attach"
 )
 
 type server struct {

@@ -1,4 +1,4 @@
-package cutter
+package dicer
 
 import "embed"
 

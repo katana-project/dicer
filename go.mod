@@ -1,4 +1,4 @@
-module github.com/run-slicer/cutter
+module github.com/katana-project/dicer
 
 go 1.24.6
 
@@ -6,8 +6,9 @@ require (
 	github.com/charmbracelet/fang v0.3.0
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/charmbracelet/log v0.4.2
+	github.com/katana-project/attach v0.0.0-20251213133342-b2297cf426c7
 	github.com/oapi-codegen/runtime v1.1.2
-	github.com/run-slicer/attach v0.0.0-20251116215234-4928b37b5f7a
+	github.com/rs/cors v1.11.1
 	github.com/spf13/cobra v1.9.1
 )
 
@@ -47,8 +48,7 @@ require (
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	github.com/rs/cors v1.11.1 // indirect
-	github.com/shirou/gopsutil/v4 v4.25.10 // indirect
+	github.com/shirou/gopsutil/v4 v4.25.11 // indirect
 	github.com/speakeasy-api/jsonpath v0.6.0 // indirect
 	github.com/speakeasy-api/openapi-overlay v0.10.2 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect
@@ -59,7 +59,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
 	golang.org/x/mod v0.17.0 // indirect
-	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
 	golang.org/x/text v0.24.0 // indirect
 	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

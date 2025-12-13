@@ -45,16 +45,16 @@ jobs:
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: 1
           CC: ${{ matrix.goarch == 'amd64' && 'x86_64-w64-mingw32-gcc' || matrix.goarch == 'arm64' && 'aarch64-w64-mingw32-gcc' || 'i686-w64-mingw32-gcc' }}
-        run: go build -v -ldflags="-s -w" -o build/cutter_${GOOS}_${GOARCH} ./cmd/cutter
+        run: go build -v -ldflags="-s -w" -o build/dicer_${GOOS}_${GOARCH} ./cmd/dicer
       - name: Build binary (other platforms without cgo)
         if: matrix.goos != 'windows'
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: 0
-        run: go build -v -ldflags="-s -w" -o build/cutter_${GOOS}_${GOARCH} ./cmd/cutter
+        run: go build -v -ldflags="-s -w" -o build/dicer_${GOOS}_${GOARCH} ./cmd/dicer
       - name: Publish artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cutter_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}
-          path: build/cutter_${{ matrix.goos }}_${{ matrix.goarch }}
+          name: dicer_${{ matrix.goos }}_${{ matrix.goarch }}${{ matrix.goos == 'windows' && '.exe' || '' }}
+          path: build/dicer_${{ matrix.goos }}_${{ matrix.goarch }}

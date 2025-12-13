@@ -18,10 +18,10 @@ import (
 	"github.com/charmbracelet/fang"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/log"
+	"github.com/katana-project/attach"
+	"github.com/katana-project/dicer"
+	"github.com/katana-project/dicer/api"
 	"github.com/rs/cors"
-	"github.com/run-slicer/attach"
-	"github.com/run-slicer/cutter"
-	"github.com/run-slicer/cutter/api"
 	"github.com/spf13/cobra"
 )
 
@@ -104,7 +104,7 @@ func displayBanner(t time.Duration) {
 		lipgloss.NewStyle().
 			Foreground(lipgloss.Color("5")).
 			Bold(true).
-			Render("cutter"),
+			Render("dicer"),
 		versionStr,
 		lipgloss.NewStyle().
 			Faint(true).
@@ -141,9 +141,9 @@ func main() {
 	configureLog(log.Default(), false)
 
 	cmd := &cobra.Command{
-		Use:   "cutter",
+		Use:   "dicer",
 		Short: "a tool for remote JVM instrumentation",
-		Long:  "cutter is a CLI tool for exposing local JVM instances to remote instrumentation tools, such as https://slicer.run.",
+		Long:  "dicer is a CLI tool for exposing local JVM instances to remote instrumentation tools, such as https://slicer.run.",
 		PersistentPreRun: func(cmd *cobra.Command, _ []string) {
 			configureLog(log.Default(), verbose)
 		},
@@ -174,7 +174,7 @@ func main() {
 				},
 			})
 
-			assetFs, err := fs.Sub(cutter.WebAssets, "web/dist")
+			assetFs, err := fs.Sub(dicer.WebAssets, "web/dist")
 			if err != nil {
 				return fmt.Errorf("failed to make sub-fs for web assets: %w", err)
 			}
@@ -196,7 +196,7 @@ func main() {
 				timeoutCtx, release := context.WithTimeout(context.Background(), 10*time.Second)
 				defer release()
 
-				log.Info("shutting down gracefully, thanks for using cutter!")
+				log.Info("shutting down gracefully, thanks for using dicer!")
 				if err := s.Shutdown(timeoutCtx); err != nil {
 					log.Fatal("failed to shutdown HTTP server", "error", err)
 				}
