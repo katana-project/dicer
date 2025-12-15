@@ -23,6 +23,7 @@ import (
 	"github.com/katana-project/dicer/api"
 	"github.com/rs/cors"
 	"github.com/spf13/cobra"
+	"github.com/wizzard0/trycloudflared"
 )
 
 var (
@@ -120,6 +121,7 @@ func displayBanner(t time.Duration) {
 var (
 	verbose bool
 	port    int
+	local   bool
 )
 
 func findPort() (port int, err error) {
@@ -204,6 +206,23 @@ func main() {
 
 			log.Info("listening for requests", "port", port)
 			log.Info("access the web interface at", "url", fmt.Sprintf("http://localhost:%d", port))
+
+			tunCtx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+
+			if !local {
+				go func() {
+					// TODO: fork, update cloudflared and suppress logging output
+					url, err := trycloudflared.CreateCloudflareTunnel(tunCtx, port)
+					if err != nil {
+						log.Error("failed to create tunnel", "error", err)
+						return
+					}
+
+					log.Info("access the web interface remotely at", "url", url)
+				}()
+			}
+
 			if err := s.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 				return fmt.Errorf("HTTP server failed: %w", err)
 			}
@@ -212,6 +231,7 @@ func main() {
 	}
 	cmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose output")
 	cmd.Flags().IntVarP(&port, "port", "p", 0, "port to listen on (default: find a free port)")
+	cmd.Flags().BoolVarP(&local, "local", "", false, "disable remote tunnel creation for local use only")
 
 	if err := fang.Execute(context.Background(), cmd); err != nil {
 		os.Exit(1)

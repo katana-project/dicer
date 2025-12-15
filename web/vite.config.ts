@@ -5,10 +5,10 @@ import { defineConfig } from "vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [tailwindcss(), svelte()],
-  resolve: {
-    alias: {
-      $lib: resolve("./src/lib"),
+    plugins: [tailwindcss(), svelte()],
+    resolve: {
+        alias: {
+            $lib: resolve("./src/lib"),
+        },
     },
-  },
 });
