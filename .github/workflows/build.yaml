@@ -21,20 +21,11 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.24.x"
-      - name: Set up Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: "24"
-      - name: Build web interface
-        run: |
-          cd web
-          corepack pnpm install
-          corepack pnpm build
+          go-version: "1.27.x"
       - name: Set up llvm-mingw for Windows
         if: matrix.goos == 'windows'
         run: |
-          LLVM_MINGW_VERSION=20251104
+          LLVM_MINGW_VERSION=20261117
           curl -LO --progress-bar https://github.com/mstorsjo/llvm-mingw/releases/download/${LLVM_MINGW_VERSION}/llvm-mingw-${LLVM_MINGW_VERSION}-ucrt-ubuntu-22.04-x86_64.tar.xz
           tar -xvf llvm-mingw-${LLVM_MINGW_VERSION}-ucrt-ubuntu-22.04-x86_64.tar.xz
           echo "$(pwd)/llvm-mingw-${LLVM_MINGW_VERSION}-ucrt-ubuntu-22.04-x86_64/bin" >> $GITHUB_PATH

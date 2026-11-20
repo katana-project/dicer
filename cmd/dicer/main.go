@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/fs"
 	"net"
 	"net/http"
 	"os"
@@ -19,11 +18,9 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/log"
 	"github.com/katana-project/attach"
-	"github.com/katana-project/dicer"
 	"github.com/katana-project/dicer/api"
 	"github.com/rs/cors"
 	"github.com/spf13/cobra"
-	"github.com/wizzard0/trycloudflared"
 )
 
 var (
@@ -176,13 +173,7 @@ func main() {
 				},
 			})
 
-			assetFs, err := fs.Sub(dicer.WebAssets, "web/dist")
-			if err != nil {
-				return fmt.Errorf("failed to make sub-fs for web assets: %w", err)
-			}
-
 			h := http.NewServeMux()
-			h.Handle("/", http.FileServerFS(assetFs))
 			h.Handle("/api/", cors.Default().Handler(apiHandler))
 
 			s := &http.Server{
@@ -205,21 +196,17 @@ func main() {
 			}()
 
 			log.Info("listening for requests", "port", port)
-			log.Info("access the web interface at", "url", fmt.Sprintf("http://localhost:%d", port))
-
-			tunCtx, cancel := context.WithCancel(context.Background())
-			defer cancel()
+			log.Info("access the API at", "url", fmt.Sprintf("http://localhost:%d", port))
 
 			if !local {
 				go func() {
-					// TODO: fork, update cloudflared and suppress logging output
-					url, err := trycloudflared.CreateCloudflareTunnel(tunCtx, port)
+					/*url, err := trycloudflared.CreateCloudflareTunnel(tunCtx, port)
 					if err != nil {
 						log.Error("failed to create tunnel", "error", err)
 						return
 					}
 
-					log.Info("access the web interface remotely at", "url", url)
+					log.Info("access the web interface remotely at", "url", url)*/
 				}()
 			}
 
